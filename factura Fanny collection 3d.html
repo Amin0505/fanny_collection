@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fanny Collection - Sistema de Facturación</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            background: linear-gradient(135deg, #ffe4e1, #ffffff); /* Gradiente rosado a blanco */
+            color: #333; 
+            overflow-x: hidden;
+        }
+        .container { 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 20px; 
+        }
+        h1 { 
+            text-align: center; 
+            color: #ff69b4; /* Rosado */
+            animation: fadeIn 1s ease-in; 
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        /* Estilos para el modelo 3D del nombre */
+        .store-entrance {
+            perspective: 1200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+            background: radial-gradient(circle, #ffe4e1 0%, #ffffff 100%);
+        }
+        .store-name {
+            font-size: 48px;
+            font-weight: bold;
+            color: #ff69b4;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: rotateName 8s infinite linear;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        .store-name:hover {
+            transform: scale(1.1);
+        }
+        @keyframes rotateName {
+            0% { transform: rotateY(0deg); }
+            100% { transform: rotateY(360deg); }
+        }
+
+        /* Elementos decorativos de ropa */
+        .decor {
+            position: absolute;
+            font-size: 60px;
+            opacity: 0.6;
+            animation: float 4s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(10deg); }
+        }
+        .dress1 { top: 10%; left: 10%; }
+        .dress2 { top: 20%; right: 10%; }
+        .dress3 { bottom: 20%; left: 20%; }
+        .dress4 { bottom: 10%; right: 20%; }
+
+        /* Estilos para el programa */
+        .program { display: none; }
+        form { 
+            margin-bottom: 20px; 
+            background-color: #ffe4e1; /* Rosado claro */
+            padding: 20px; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        form:hover { transform: scale(1.02); }
+        input, button { 
+            padding: 10px; 
+            margin: 5px; 
+            border: 1px solid #ff69b4; 
+            border-radius: 5px; 
+            transition: all 0.3s ease; 
+        }
+        input:focus { 
+            border-color: #ff1493; 
+            box-shadow: 0 0 5px rgba(255, 105, 180, 0.5); 
+        }
+        button { 
+            background-color: #ff69b4; 
+            color: white; 
+            cursor: pointer; 
+        }
+        button:hover { 
+            background-color: #ff1493; 
+            transform: translateY(-2px); 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2); 
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-top: 20px; 
+            background-color: #ffffff; 
+            border-radius: 10px; 
+            overflow: hidden; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        th, td { 
+            border: 1px solid #ff69b4; 
+            padding: 8px; 
+            text-align: left; 
+            transition: background-color 0.3s ease; 
+        }
+        th { 
+            background-color: #ff69b4; 
+            color: white; 
+        }
+        tr:hover { background-color: #ffe4e1; }
+        .total { 
+            font-weight: bold; 
+            color: #ff69b4; 
+        }
+        #invoice { 
+            margin-top: 20px; 
+            padding: 20px; 
+            background-color: #ffe4e1; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+            animation: slideIn 0.5s ease; 
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .section { 
+            margin-top: 40px; 
+            padding: 20px; 
+            background-color: #ffe4e1; 
+            border-radius: 10px; 
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); 
+        }
+        .nav { 
+            text-align: center; 
+            margin-bottom: 20px; 
+        }
+        .nav button { 
+            margin: 0 10px; 
+        }
+        .hidden { display: none; }
+        .month-group { 
+            margin-bottom: 20px; 
+            border: 1px solid #ff69b4; 
+            padding: 10px; 
+            border-radius: 5px; 
+        }
+        .month-title { 
+            font-weight: bold; 
+            color: #ff69b4; 
+        }
+        .month-total { 
+            font-weight: bold; 
+            color: #ff1493; 
+            margin-top: 10px; 
+        }
+        .day-group { 
+            margin-bottom: 10px; 
+            border: 1px solid #ffe4e1; 
+            padding: 10px; 
+            border-radius: 5px; 
+            background-color: #ffffff; 
+        }
+        .day-title { 
+            font-weight: bold; 
+            color: #ff69b4; 
+        }
+        .day-total { 
+            font-weight: bold; 
+            color: #ff1493; 
+            margin-top: 10px; 
+        }
+        .daily-total { 
+            font-weight: bold; 
+            color: #ff1493; 
+            margin-top: 10px; 
+        }
+    </style>
+    <!-- Incluir jsPDF para generar PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <!-- Página de Inicio con el Modelo 3D del Nombre -->
+    <div id="entrance" class="store-entrance">
+        <div class="decor dress1">👗</div>
+        <div class="decor dress2">👙</div>
+        <div class="decor dress3">👠</div>
+        <div class="decor dress4">👜</div>
+        <div class="store-name" onclick="enterStore()">FANNY COLLECTION</div>
+    </div>
+
+    <!-- Programa Principal -->
+    <div id="program" class="program container">
+        <h1>Fanny Collection - Sistema de Facturación</h1>
+        <p>Moneda: Pesos Dominicanos (DOP)</p>
+
+        <div class="nav">
+            <button onclick="showSection('facturacion')">Facturación</button>
+            <button onclick="showSection('historial')">Historial de Ventas</button>
+            <button onclick="showSection('cierre-diario')">Cierre Diario</button>
+        </div>
+
+        <div id="facturacion" class="section">
+            <h2>Facturación</h2>
+            <form id="productForm">
+                <label for="productName">Nombre del Producto:</label>
+                <input type="text" id="productName" required><br><br>
+                
+                <label for="productPrice">Precio (DOP):</label>
+                <input type="number" id="productPrice" step="0.01" required><br><br>
+                
+                <label for="productQuantity">Cantidad:</label>
+                <input type="number" id="productQuantity" min="1" required><br><br>
+                
+                <button type="submit">Agregar Producto</button>
+                <button type="button" onclick="generateInvoice()">Generar Factura</button>
+                <button type="button" onclick="exportToPDF()">Exportar a PDF</button>
+            </form>
+
+            <h3>Productos Agregados</h3>
+            <table id="productTable">
+                <thead>
+                    <tr>
+                        <th>Producto</th>
+                        <th>Precio (DOP)</th>
+                        <th>Cantidad</th>
+                        <th>Subtotal (DOP)</th>
+                        <th>Acción</th>
+                    </tr>
+                </thead>
+                <tbody id="productList">
+                </tbody>
+            </table>
+
+            <div id="invoice" style="display: none;">
+                <h3>Factura</h3>
+                <p>Subtotal: <span id="subtotal">0.00</span> DOP</p>
+                <p class="total">Total (Ganancias): <span id="total">0.00</span> DOP</p>
+            </div>
+        </div>
+
+        <div id="historial" class="section hidden">
+            <h2>Historial de Ventas</h2>
+            <div id="salesHistory">
+                <!-- Se llenará dinámicamente -->
+            </div>
+        </div>
+
+        <div id="cierre-diario" class="section hidden">
+            <h2>Cierre Diario</h2>
+            <label for="datePicker">Selecciona una fecha:</label>
+            <input type="date" id="datePicker" required>
+            <button onclick="loadDailySales()">Cargar Ventas del Día</button>
+            
+            <div id="dailySales" style="display: none;">
+                <h3>Ventas del Día</h3>
+                <table id="dailyTable">
+                    <thead>
+                        <tr>
+                            <th>Hora</th>
+                            <th>Productos</th>
+                            <th>Subtotal (DOP)</th>
+                            <th>Total (DOP)</th>
+                            <th>Ganancias (DOP)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dailyList">
+                    </tbody>
+                </table>
+                <p class="daily-total">Total Ganancias del Día: <span id="dailyTotal">0.00</span> DOP</p>
+                <button onclick="finalizeDay()">Finalizar Día</button>
+                <button onclick="exportDailyClosureToPDF()">Exportar Cierre a PDF</button>
+            </div>
+            
+            <h3>Cierres Diarios Anteriores</h3>
+            <div id="dailyClosures">
+                <!-- Se llenará dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let products = [];
+        let salesHistory = JSON.parse(localStorage.getItem('salesHistory')) || [];
+        let dailyClosures = JSON.parse(localStorage.getItem('dailyClosures')) || [];
+
+        function enterStore() {
+            document.getElementById('entrance').style.display = 'none';
+            document.getElementById('program').style.display = 'block';
+            showSection('facturacion');
+        }
+
+        function showSection(section) {
+            document.getElementById('facturacion').classList.add('hidden');
+            document.getElementById('historial').classList.add('hidden');
+            document.getElementById('cierre-diario').classList.add('hidden');
+            document.getElementById(section).classList.remove('hidden');
+            if (section === 'historial') {
+                updateSalesHistory();
+            } else if (section === 'cierre-diario') {
+                updateDailyClosures();
+            }
+        }
+
+        document.getElementById('productForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('productName').value;
+            const price = parseFloat(document.getElementById('productPrice').value);
+            const quantity = parseInt(document.getElementById('productQuantity').value);
+            
+            products.push({ name, price, quantity });
+            updateTable();
+            document.getElementById('productForm').reset();
+        });
+
+        function updateTable() {
+            const tbody = document.getElementById('productList');
+            tbody.innerHTML = '';
+            products.forEach((p, index) => {
+                const row = document.createElement('tr');
+                const subtotal = p.price * p.quantity;
+                row.innerHTML = `
+                    <td>${p.name}</td>
+                    <td>${p.price.toFixed(2)}</td>
+                    <td>${p.quantity}</td>
+                    <td>${subtotal.toFixed(2)}</td>
+                    <td><button onclick="removeProduct(${index})">Eliminar</button></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function removeProduct(index) {
+            products.splice(index, 1);
+            updateTable();
+        }
+
+        function generateInvoice() {
+            const subtotal = products.reduce((sum, p) => sum + (p.price * p.quantity), 0);
+            const total = subtotal; // Sin ITBIS, ganancias = total
+            
+            document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+            document.getElementById('total').textContent = total.toFixed(2);
+            document.getElementById('invoice').style.display = 'block';
+
+            // Guardar en historial
+            const now = new Date();
+            const fecha = now.toLocaleDateString('es-ES'); // Fecha en español
+            const hora = now.toLocaleTimeString('es-ES'); // Hora en español
+            const dia = now.toLocaleDateString('es-ES', { weekday: 'long' }); // Día de la semana en español
+            
+            const sale = {
+                fecha,
+                hora,
+                dia,
+                productos: [...products],
+                subtotal: subtotal.toFixed(2),
+                total: total.toFixed(2),
+                ganancias: total.toFixed(2), // Ganancias = total de la venta
+                mes: now.getMonth() + 1, // Mes (1-12)
+                anio: now.getFullYear(),
+                fechaISO: now.toISOString().split('T')[0] // Para comparación de fechas
+            };
+            salesHistory.push(sale);
+            localStorage.setItem('salesHistory', JSON.stringify(salesHistory));
+            
+            // Limpiar productos después de generar factura
+            products = [];
+            updateTable();
+            document.getElementById('invoice').style.display = 'none';
+            alert('Factura generada y guardada en historial.');
+        }
+
+        function updateSalesHistory() {
+            const historyDiv = document.getElementById('salesHistory');
+            historyDiv.innerHTML = '';
+            
+            // Agrupar por mes y año
+            const groupedByMonth = salesHistory.reduce((acc, sale) => {
+                const key = `${sale.anio}-${sale.mes}`;
+                if (!acc[key]) acc[key] = [];
+                acc[key].push(sale);
+                return acc;
+            }, {});
+            
+            Object.keys(groupedByMonth).sort().reverse().forEach(monthKey => {
+                const [anio, mes] = monthKey.split('-');
+                const monthName = new Date(anio, mes - 1).toLocaleDateString('es-ES', { month: 'long', year: 'numeric' });
+                
+                const monthDiv = document.createElement('div');
+                monthDiv.className = 'month-group';
+                monthDiv.innerHTML = `<h3 class="month-title">${monthName}</h3>`;
+                
+                // Agrupar por día dentro del mes
+                const groupedByDay = groupedByMonth[monthKey].reduce((acc, sale) => {
+                    const dayKey = sale.fechaISO;
+                    if (!acc[dayKey]) acc[dayKey] = [];
+                    acc[dayKey].push(sale);
+                    return acc;
+                }, {});
+                
+                let totalGananciasMes = 0;
+                Object.keys(groupedByDay).sort().reverse().forEach(dayKey => {
+                    const daySales = groupedByDay[dayKey];
+                    const dayDiv = document.createElement('div');
+                    dayDiv.className = 'day-group';
+                    const dayDate = new Date(dayKey).toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric' });
+                    dayDiv.innerHTML = `<h4 class="day-title">${dayDate}</h4>`;
+                    
+                    const table = document.createElement('table');
+                    table.innerHTML = `
+                        <thead>
+                            <tr>
+                                <th>Hora</th>
+                                <th>Productos</th>
+                                <th>Subtotal (DOP)</th>
+                                <th>Total (DOP)</th>
+                                <th>Ganancias (DOP)</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    `;
+                    const tbody = table.querySelector('tbody');
+                    
+                    let totalGananciasDia = 0;
+                    daySales.forEach(sale => {
+                        const row = document.createElement('tr');
+                        const productosStr = sale.productos.map(p => `${p.name} (x${p.quantity})`).join(', ');
+                        row.innerHTML = `
+                            <td>${sale.hora}</td>
+                            <td>${productosStr}</td>
+                            <td>${sale.subtotal}</td>
+                            <td>${sale.total}</td>
+                            <td>${sale.ganancias}</td>
+                        `;
+                        tbody.appendChild(row);
+                        totalGananciasDia += parseFloat(sale.ganancias);
+                    });
+                    
+                    dayDiv.innerHTML += `<p class="day-total">Total Ganancias del Día: ${totalGananciasDia.toFixed(2)} DOP</p>`;
+                    dayDiv.appendChild(table);
+                    monthDiv.appendChild(dayDiv);
+                    totalGananciasMes += totalGananciasDia;
+                });
+                
+                monthDiv.innerHTML += `<p class="month-total">Total Ganancias del Mes: ${totalGananciasMes.toFixed(2)} DOP</p>`;
+                historyDiv.appendChild(monthDiv);
+            });
+        }
+
+        function loadDailySales() {
+            const date = document.getElementById('datePicker').value;
+            if (!date) {
+                alert('Selecciona una fecha.');
+                return;
+            }
+            const daySales = salesHistory.filter(sale => sale.fechaISO === date);
+            const tbody = document.getElementById('dailyList');
+            tbody.innerHTML = '';
+            let totalGanancias = 0;
+            daySales.forEach(sale => {
+                const row = document.createElement('tr');
+                const productosStr = sale.productos.map(p => `${p.name} (x${p.quantity})`).join(', ');
+                row.innerHTML = `
+                    <td>${sale.hora}</td>
+                    <td>${productosStr}</td>
+                    <td>${sale.subtotal}</td>
+                    <td>${sale.total}</td>
+                    <td>${sale.ganancias}</td>
+                `;
+                tbody.appendChild(row);
+                totalGanancias += parseFloat(sale.ganancias);
+            });
+            document.getElementById('dailyTotal').textContent = totalGanancias.toFixed(2);
+            document.getElementById('dailySales').style.display = 'block';
+        }
+
+        function finalizeDay() {
+            const date = document.getElementById('datePicker').value;
+            if (!date) {
+                alert('Selecciona una fecha.');
+                return;
+            }
+            const total = parseFloat(document.getElementById('dailyTotal').textContent);
+            const closure = {
+                date,
+                totalGanancias: total.toFixed(2)
+            };
+            dailyClosures.push(closure);
+            localStorage.setItem('dailyClosures', JSON.stringify(dailyClosures));
+            alert('Día finalizado.');
+            document.getElementById('dailySales').style.display = 'none';
+            updateDailyClosures();
+        }
+
+        function updateDailyClosures() {
+            const closuresDiv = document.getElementById('dailyClosures');
+            closuresDiv.innerHTML = '';
+            dailyClosures.forEach(closure => {
+                const div = document.createElement('div');
+                div.className = 'month-group';
+                div.innerHTML = `<p><strong>${closure.date}</strong>: Total Ganancias ${closure.totalGanancias} DOP</p>`;
+                closuresDiv.appendChild(div);
+            });
+        }
+
+        function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.text('Factura - Fanny Collection', 20, 20);
+            let y = 40;
+            products.forEach(p => {
+                doc.text(`${p.name} - ${p.price.toFixed(2)} DOP x ${p.quantity} = ${(p.price * p.quantity).toFixed(2)} DOP`, 20, y);
+                y += 10;
+            });
+            const subtotal = products.reduce((sum, p) => sum + (p.price * p.quantity), 0);
+            doc.text(`Subtotal: ${subtotal.toFixed(2)} DOP`, 20, y);
+            y += 10;
+            doc.text(`Total: ${subtotal.toFixed(2)} DOP`, 20, y);
+            doc.save('factura.pdf');
+        }
+
+        function exportDailyClosureToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            doc.text('Cierre Diario - Fanny Collection', 20, 20);
+            const date = document.getElementById('datePicker').value;
+            doc.text(`Fecha: ${date}`, 20, 30);
+            let y = 50;
+            const daySales = salesHistory.filter(sale => sale.fechaISO === date);
+            daySales.forEach(sale => {
+                doc.text(`${sale.hora} - Subtotal: ${sale.subtotal} DOP - Total: ${sale.total} DOP`, 20, y);
+                y += 10;
+            });
+            const total = document.getElementById('dailyTotal').textContent;
+            doc.text(`Total Ganancias: ${total} DOP`, 20, y);
+            doc.save('cierre_diario.pdf');
+        }
+    </script>
+</body>
+</html>
